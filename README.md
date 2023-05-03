@@ -19,6 +19,7 @@
 * [Laravel 10](https://laravel.com/)
 * [Composer](https://getcomposer.org/)
 * [MySQL](https://www.mysql.com/)
+* [Node.js](https://nodejs.org/)
 
 ## Запуск
 1. Клонируйте этот репозиторий и перейдите в папку проекта:
@@ -29,6 +30,8 @@ cd forum
 2. Установите зависимости:
 ```sh
 composer install
+npm install
+npm run build
 ```
 3. Запустите MySQL, измените параметры для подключения к базе данных и локализации в файле .env.example и выполните:
 ```sh
@@ -38,9 +41,12 @@ cp .env.example .env
 ```sh
 FAKER_LOCALE=ru_RU
 APP_LOCALE=ru
-APP_TIMEZONE=Europe/Moscow
 ```
-4. Выполните команду для запуска миграций:
+4. Сгенерируйте ключ приложения:
+```sh
+php artisan key:generate
+```
+5. Выполните команду для запуска миграций:
 ```sh
 php artisan migrate
 ```
@@ -48,8 +54,8 @@ php artisan migrate
 ```sh
 php artisan migrate --seed
 ```
-5. Запустите веб-сервер:
+6. Запустите веб-сервер:
 ```sh
 php artisan serve
 ```
-6. Откройте в браузере http://localhost:8000/
+7. Откройте в браузере http://localhost:8000/
