@@ -1,0 +1,22 @@
+body {
+    cursor: default;
+}
+
+.link-hover {
+    text-decoration-color: transparent;
+    transition: 0.15s;
+    transition-timing-function: ease-in-out;
+}
+
+.link-hover:hover {
+    text-decoration-color: var(--bs-dark);
+}
+
+.card-hover {
+    transition: 0.15s;
+    transition-timing-function: ease-in-out;
+}
+
+.card-hover:hover {
+    box-shadow: 0px 0px 0px 5px rgba(13, 110, 253, 0.3);
+}
