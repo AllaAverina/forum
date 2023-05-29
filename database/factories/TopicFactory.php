@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +21,7 @@ class TopicFactory extends Factory
             'title' => ucfirst(fake()->unique()->words(rand(1, 5), true)),
             'subtitle' => fake()->randomElement([null, ucfirst(fake()->words(rand(5, 15), true))]),
             'created_at' => fake()->randomElement([now(), fake()->dateTimeBetween('-1 year', now())]),
-            'user_id' => fake()->numberBetween(1, 30),
+            'user_id' => User::get()->random()->id,
         ];
     }
 }

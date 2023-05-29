@@ -9,12 +9,10 @@
                     <h2 class="card-title">{{ $post->title }}</h2>
                     
                     @if ($post->subtitle)
-                    <h4 class="card-subtitle">{{ $post->subtitle }}</h4>
+                    <h4 class="card-subtitle mb-3">{{ $post->subtitle }}</h4>
                     @endif
-                </div>
 
-                <div class="card-body">
-                    <div class="card-subtitle text-center mb-3">
+                    <div class="card-subtitle text-center">
                         <small class="border border-secondary rounded-5 px-2">{{ __('Topic') }}: <a class="link-dark link-hover" href="{{ route('topics.show', $post->topic_id) }}">{{ $post->topic->title }}</a></small>
                         <small class="border border-secondary rounded-5 px-2">{{ __('Author') }}: <a class="link-dark link-hover" href="{{ route('users.show', $post->user_id) }}">{{ $post->user->name }}</a></small>
                         <small class="border border-secondary rounded-5 px-2">{{ __('Created at') }}: {{ $post->created_at->format('d.m.Y') }}</small>
@@ -23,7 +21,9 @@
                         <small class="border border-secondary rounded-5 px-2">{{ __('Updated at') }}: {{ $post->updated_at->format('d.m.Y') }}</small>
                         @endif
                     </div>
+                </div>
 
+                <div class="card-body">
                     <div class="card-text">
                         {{ $post->body }}
                     </div>

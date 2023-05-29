@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
+use App\Models\Topic;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,8 +23,8 @@ class PostFactory extends Factory
             'subtitle' => fake()->randomElement([null, ucfirst(fake()->words(rand(5, 20), true))]),
             'body' => fake()->text(500),
             'created_at' => fake()->randomElement([now(), fake()->dateTimeBetween('-1 year', now())]),
-            'user_id' => fake()->numberBetween(1, 30),
-            'topic_id' => fake()->numberBetween(1, 25),
+            'user_id' => User::get()->random()->id,
+            'topic_id' => Topic::get()->random()->id,
         ];
     }
 }

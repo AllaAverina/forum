@@ -8,37 +8,19 @@ use Illuminate\Support\Facades\Auth;
 class ProfileController extends Controller
 {
     /**
-     * Create the controller instance.
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request)
-    {
-        $user = $request->user();
-
-        return view('profile.edit', compact('user'));
-    }
-
-    /**
-     * Display the specified resource.
+     * Display the user's profile.
      */
     public function show(Request $request, string $part = 'info')
     {
         $user = $request->user();
 
         if ($part === 'posts') {
-            $posts = $user->posts()->with('topic')->withTrashed()->latest('updated_at')->paginate(20);
+            $posts = $user->posts()->with('topic')->withTrashed()->latest('updated_at')->paginate(10);
             return view('profile.show', compact('user', 'posts', 'part'));
         }
 
         if ($part === 'comments') {
-            $comments = $user->comments()->with('post')->withTrashed()->latest('updated_at')->paginate(20);
+            $comments = $user->comments()->with('post')->withTrashed()->latest('updated_at')->paginate(10);
             return view('profile.show', compact('user', 'comments', 'part'));
         }
 
@@ -51,16 +33,22 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete the user's account.
+     * Show the form for editing the user's profile.
      */
-    public function destroy(Request $request)
+    public function edit(Request $request)
     {
         $user = $request->user();
 
+        return view('profile.edit', compact('user'));
+    }
+
+    /**
+     * Delete the user's profile.
+     */
+    public function destroy(Request $request)
+    {
         Auth::logout();
-
-        $user->delete();
-
+        $request->user()->delete();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

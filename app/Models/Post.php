@@ -14,6 +14,26 @@ class Post extends Model
     use HasFactory, SoftDeletes, Prunable;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'topic_id',
+        'title',
+        'subtitle',
+        'body',
+        'user_id',
+    ];
+
+    /**
+     * All of the relationships to be touched.
+     *
+     * @var array
+     */
+    protected $touches = ['topic'];
+
+    /**
      * Get comments for the post.
      */
     public function comments(): HasMany

@@ -28,7 +28,7 @@
                             <label for="topic" class="col-md-4 col-form-label text-md-end">{{ __('Topic') }}</label>
 
                             <div class="col-md-6">
-                                <select class="form-select @error('topic') is-invalid @enderror" name="topic" id="topic" required autofocus>
+                                <select class="form-select @error('topic_id') is-invalid @enderror" name="topic_id" id="topic" required autofocus>
                                     <option value="" hidden>{{ __('Choose a topic') }}</option>
                                     @foreach ($topics as $topic)
                                         @if (isset($post) && $topic->id === $post->topic_id)
@@ -39,7 +39,7 @@
                                     @endforeach
                                 </select>
 
-                                @error('topic')
+                                @error('topic_id')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

@@ -14,6 +14,17 @@ class Topic extends Model
     use HasFactory, SoftDeletes, Prunable;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'title',
+        'subtitle',
+        'user_id',
+    ];
+
+    /**
      * Get the posts for the topic.
      */
     public function posts(): HasMany

@@ -3,28 +3,30 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card">
                 <div class="card-header bg-transparent text-center">
                     <h2 class="card-title">{{ $topic->title }}</h2>
 
                     @if ($topic->subtitle)
-                    <h4 class="card-subtitle">{{ $topic->subtitle }}</h4>
+                    <h4 class="card-subtitle mb-3">{{ $topic->subtitle }}</h4>
                     @endif
 
-                    <small class="border border-secondary rounded-5 px-2">
-                        {{ __('Author') }}:
-                        <a class="link-dark link-hover" href="{{ route('users.show', $topic->user_id) }}">
-                            {{ $topic->user->name }}
-                        </a>
-                    </small>
+                    <div class="card-subtitle text-center">
+                        <small class="border border-secondary rounded-5 px-2">{{ __('Author') }}: <a class="link-dark link-hover" href="{{ route('users.show', $topic->user_id) }}">{{ $topic->user->name }}</a></small>
+                        <small class="border border-secondary rounded-5 px-2">{{ __('Created at') }}: {{ $topic->created_at->format('d.m.Y') }}</small>
+                        
+                        @if ($topic->created_at->format('d.m.Y H:i') !== $topic->updated_at->format('d.m.Y H:i'))
+                        <small class="border border-secondary rounded-5 px-2">{{ __('Updated at') }}: {{ $topic->updated_at->format('d.m.Y') }}</small>
+                        @endif
+                    </div>
                 </div>
 
                 <ul class="list-group list-group-flush">
                     @forelse ($posts as $post)
                     <li class="list-group-item">
                         <div class="row align-items-center">
-                            <div class="col-md-10">
+                            <div class="col-md-8">
                                 <a class="card-title link-dark link-hover fs-4" href="{{ route('posts.show', $post->id) }}">{{ $post->title }}</a>
 
                                 @if ($post->subtitle)
@@ -34,6 +36,12 @@
 
                             <div class="col-md-2 text-md-center">
                                 <span class="badge bg-secondary">{{ __('Comments') }}: {{ $post->comments_count }}</span>
+                            </div>
+
+                            <div class="col-md-2 text-md-center">
+                                <small class="text-muted">
+                                    {{ __('Last update') }}: {{ $post->updated_at->format('d.m.Y') }}
+                                </small>
                             </div>
                         </div>
                     </li>

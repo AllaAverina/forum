@@ -9,7 +9,7 @@
     </div>
 
     <div class="row justify-content-center mb-3">
-        <form method="GET" action="{{ route('topics.index') }}" class="col-md-8">
+        <form method="GET" action="{{ route('topics.index') }}" class="col-md-10">
             @csrf
             <div class="input-group">
                 <input type="search" name="search" class="col-md-4 form-control" placeholder="{{ __('Search topics') }}" aria-label="Search" value="{{ $search }}">
@@ -19,7 +19,7 @@
     </div>
 
     <div class="row justify-content-center align-items-center mb-3">
-        <div class="col-md-8">
+        <div class="col-md-10">
             @forelse ($topics as $topic)
             <div class="card mb-2 card-hover">
                 <div class="card-body">

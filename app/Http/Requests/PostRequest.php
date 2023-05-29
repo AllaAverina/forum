@@ -23,18 +23,31 @@ class PostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'topic' => [
+            'topic_id' => [
                 'required',
                 'integer',
                 'exists:topics,id',
             ],
             'title' => [
                 'required',
+                'string',
                 'max:255',
                 Rule::unique('posts')->ignore(optional($this->post)->id),
             ],
-            'subtitle' => ['max:255', 'nullable'],
-            'body' => ['required'],
+            'subtitle' => ['max:255', 'string', 'nullable'],
+            'body' => ['required', 'string',],
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'topic_id' => 'topic',
         ];
     }
 }

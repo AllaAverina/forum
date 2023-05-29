@@ -24,27 +24,16 @@ class PostController extends Controller
      */
     public function index(SearchRequest $request)
     {
-        $search = $request->search ?? '';
-
-        if ($search) {
-            $posts = Post::whereHas('topic', function ($query) {
-                $query->where('deleted_at', null);
-            })
-                ->with('user', 'topic')
-                ->withCount('comments')
-                ->where('title', 'LIKE', "%$search%")
-                ->latest('updated_at')
-                ->paginate(20)
-                ->withQueryString();
-        } else {
-            $posts = Post::whereHas('topic', function ($query) {
-                $query->where('deleted_at', null);
-            })
-                ->with('user', 'topic')
-                ->withCount('comments')
-                ->latest('updated_at')
-                ->paginate(20);
-        }
+        $search = $request->get('search', '');
+        $posts = Post::whereHas('topic', function ($query) {
+            $query->where('deleted_at', null);
+        })
+            ->with('user', 'topic')
+            ->withCount('comments')
+            ->where('title', 'LIKE', "%$search%")
+            ->latest('updated_at')
+            ->paginate(20)
+            ->withQueryString();
 
         return view('post.index', compact('posts', 'search'));
     }
@@ -63,13 +52,8 @@ class PostController extends Controller
      */
     public function store(PostRequest $request)
     {
-        $post = new Post;
-        $post->topic_id = $request->topic;
-        $post->title = $request->title;
-        $post->subtitle = $request->subtitle;
-        $post->body = $request->body;
-        $post->user_id = $request->user()->id;
-        $post->save();
+        $post = Post::create($request->merge(['user_id' => $request->user()->id])
+            ->only('topic_id', 'title', 'subtitle', 'body', 'user_id'));
 
         return to_route('posts.edit', $post->id)->withSuccess(__('Created successfully'));
     }
@@ -79,7 +63,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $comments = $post->comments()->with('user')->paginate(20)->fragment('comments');
+        $comments = $post->comments()->with('user')->latest('updated_at')->paginate(20)->fragment('comments');
         return view('post.post-comments', compact('post', 'comments'));
     }
 
@@ -97,10 +81,7 @@ class PostController extends Controller
      */
     public function update(PostRequest $request, Post $post)
     {
-        $post->title = $request->title;
-        $post->subtitle = $request->subtitle;
-        $post->body = $request->body;
-        $post->save();
+        $post->update($request->only('topic_id', 'title', 'subtitle', 'body'));
 
         return back()->withSuccess(__('Updated successfully'));
     }
@@ -118,9 +99,9 @@ class PostController extends Controller
     /**
      * Restore the specified resource to storage.
      */
-    public function restore(Request $request)
+    public function restore(int $id)
     {
-        $post = Post::onlyTrashed()->findOrFail($request->id)->restore();
+        Post::onlyTrashed()->findOrFail($id)->restore();
 
         return back()->withSuccess(__('Restored successfully'));
     }

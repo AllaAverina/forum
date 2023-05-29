@@ -16,7 +16,12 @@
                     <div class="row justify-content-end">
                         @if ($post->trashed())
                         <div class="col-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('posts.restore', $post->id) }}">{{ __('Restore') }}</a>
+                            <form method="POST" action="{{ route('posts.restore', $post->id) }}">
+                                @csrf
+                                @method('PATCH')
+
+                                <button type="submit" class="btn btn-primary btn-sm">{{ __('Restore') }}</button>
+                            </form>
                         </div>
                         @else
                         <div class="col-auto">

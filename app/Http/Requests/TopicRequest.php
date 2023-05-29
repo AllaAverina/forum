@@ -25,10 +25,11 @@ class TopicRequest extends FormRequest
         return [
             'title' => [
                 'required',
+                'string',
                 'max:255',
                 Rule::unique('topics')->ignore(optional($this->topic)->id),
             ],
-            'subtitle' => ['max:255', 'nullable'],
+            'subtitle' => ['max:255', 'string', 'nullable'],
         ];
     }
 }

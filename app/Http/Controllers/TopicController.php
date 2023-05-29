@@ -23,17 +23,12 @@ class TopicController extends Controller
      */
     public function index(SearchRequest $request)
     {
-        $search = $request->search ?? '';
-        
-        if ($search) {
-            $topics = Topic::withCount('posts')
-                ->where('title', 'LIKE', "%$search%")
-                ->latest()
-                ->paginate(10)
-                ->withQueryString();
-        } else {
-            $topics = Topic::withCount('posts')->latest()->paginate(10);
-        }
+        $search = $request->get('search', '');
+        $topics = Topic::withCount('posts')
+            ->where('title', 'LIKE', "%$search%")
+            ->latest('updated_at')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('topic.index', compact('topics', 'search'));
     }
@@ -51,11 +46,8 @@ class TopicController extends Controller
      */
     public function store(TopicRequest $request)
     {
-        $topic = new Topic;
-        $topic->title = $request->title;
-        $topic->subtitle = $request->subtitle;
-        $topic->user_id = $request->user()->id;
-        $topic->save();
+        $topic = Topic::create($request->merge(['user_id' => $request->user()->id])
+            ->only('title', 'subtitle', 'user_id'));
 
         return to_route('topics.edit', $topic)->withSuccess(__('Created successfully'));
     }
@@ -65,7 +57,7 @@ class TopicController extends Controller
      */
     public function show(Topic $topic)
     {
-        $posts = $topic->posts()->withCount('comments')->paginate(20);
+        $posts = $topic->posts()->withCount('comments')->latest('updated_at')->paginate(20);
         return view('topic.topic-posts', compact('topic', 'posts'));
     }
 
@@ -82,9 +74,7 @@ class TopicController extends Controller
      */
     public function update(TopicRequest $request, Topic $topic)
     {
-        $topic->title = $request->title;
-        $topic->subtitle = $request->subtitle;
-        $topic->save();
+        $topic->update($request->only('title', 'subtitle'));
 
         return back()->withSuccess(__('Updated successfully'));
     }
@@ -102,9 +92,9 @@ class TopicController extends Controller
     /**
      * Restore the specified resource to storage.
      */
-    public function restore(Request $request)
+    public function restore(int $id)
     {
-        $topic = Topic::onlyTrashed()->findOrFail($request->id)->restore();
+        Topic::onlyTrashed()->findOrFail($id)->restore();
 
         return back()->withSuccess(__('Restored successfully'));
     }

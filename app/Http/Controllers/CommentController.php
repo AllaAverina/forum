@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\Post;
 use App\Http\Requests\CommentRequest;
 use Illuminate\Http\Request;
 
@@ -20,12 +21,13 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CommentRequest $request)
+    public function store(CommentRequest $request, Post $post)
     {
-        $comment = new Comment;
-        $comment->body = $request->body;
-        $comment->user_id = $request->user()->id;
-        $comment->save();
+        Comment::create([
+            'body' => $request->body,
+            'post_id' => $post->id,
+            'user_id' => $request->user()->id,
+        ]);
 
         return back();
     }
@@ -43,10 +45,9 @@ class CommentController extends Controller
      */
     public function update(CommentRequest $request, Comment $comment)
     {
-        $comment->body = $request->body;
-        $comment->save();
+        $comment->update($request->only('body'));
 
-        return back()->withSuccess('Updated successfully');
+        return back()->withSuccess(__('Updated successfully'));
     }
 
     /**
@@ -62,9 +63,9 @@ class CommentController extends Controller
     /**
      * Restore the specified resource to storage.
      */
-    public function restore(Request $request)
+    public function restore(int $id)
     {
-        Comment::onlyTrashed()->findOrFail($request->id)->restore();
+        Comment::onlyTrashed()->findOrFail($id)->restore();
 
         return back()->withSuccess(__('Restored successfully'));
     }

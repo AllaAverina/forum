@@ -12,19 +12,12 @@ class UserController extends Controller
      */
     public function index(SearchRequest $request)
     {
-        $search = $request->search ?? '';
-
-        if ($search) {
-            $users = User::withCount(['topics', 'posts', 'comments'])
-                ->where('name', 'LIKE', "%$search%")
-                ->orderBy('name')
-                ->paginate(20)
-                ->withQueryString();
-        } else {
-            $users = User::withCount(['topics','posts', 'comments'])
-                ->orderBy('name')
-                ->paginate(20);
-        }
+        $search = $request->get('search', '');
+        $users = User::withCount('topics', 'posts', 'comments')
+            ->where('name', 'LIKE', "%$search%")
+            ->orderBy('name')
+            ->paginate(20)
+            ->withQueryString();
 
         return view('user.index', compact('users', 'search'));
     }

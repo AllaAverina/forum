@@ -16,7 +16,12 @@
                     <div class="row justify-content-end">
                         @if ($comment->trashed())
                         <div class="col-auto">
-                            <a class="btn btn-primary btn-sm" href="{{ route('comments.restore', $comment->id) }}">{{ __('Restore') }}</a>
+                            <form method="POST" action="{{ route('comments.restore', $comment->id) }}">
+                                @csrf
+                                @method('PATCH')
+
+                                <button type="submit" class="btn btn-primary btn-sm">{{ __('Restore') }}</button>
+                            </form>
                         </div>
                         @else
                         <div class="col-auto">

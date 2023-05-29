@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
+use App\Models\Post;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,8 +21,9 @@ class CommentFactory extends Factory
         return [
             'body' => fake()->text(),
             'created_at' => fake()->randomElement([now(), fake()->dateTimeBetween('-1 year', now())]),
-            'user_id' => fake()->numberBetween(1, 30),
-            'post_id' => fake()->numberBetween(1, 100),
+            'user_id' => User::get()->random()->id,
+            'post_id' => Post::get()->random()->id,
+
         ];
     }
 }

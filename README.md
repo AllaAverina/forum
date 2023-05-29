@@ -59,3 +59,13 @@ php artisan migrate --seed
 php artisan serve
 ```
 7. Откройте в браузере http://localhost:8000/
+
+## Запуск тестов
+1. Создайте новую базу данных для тестирования, измените параметры для подключения к ней в файле .env.testing и сгенерируйте ключ:
+```sh
+php artisan key:generate --env=testing
+```
+2. Затем выполните:
+```sh
+php artisan test 
+```

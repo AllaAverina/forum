@@ -24,28 +24,25 @@ Route::get('setlocale/{locale}/', function ($locale) {
 })->name('setlocale');
 
 Route::group(['middleware' => 'setlocale'], function () {
-    Route::get('/', [TopicController::class, 'index'])->name('index');
+    Route::get('', [TopicController::class, 'index'])->name('index');
 
     Route::resource('topics', TopicController::class);
-
-    Route::get('/topics/{id}/restore', [TopicController::class, 'restore'])->name('topics.restore');
+    Route::patch('topics/{id}/restore', [TopicController::class, 'restore'])->name('topics.restore');
 
     Route::resource('posts', PostController::class);
-
-    Route::get('/posts/{id}/restore', [PostController::class, 'restore'])->name('posts.restore');
+    Route::patch('posts/{id}/restore', [PostController::class, 'restore'])->name('posts.restore');
 
     Route::resource('posts.comments', CommentController::class)->shallow()->only('store', 'edit', 'update', 'destroy');
+    Route::patch('comments/{id}/restore', [CommentController::class, 'restore'])->name('comments.restore');
 
-    Route::get('/comments/{id}/restore', [CommentController::class, 'restore'])->name('comments.restore');
-
-    Route::controller(ProfileController::class)->group(function () {
-        Route::get('profile/edit', 'edit')->name('profile.edit');
-        Route::delete('profile', 'destroy')->middleware('password.confirm')->name('profile.destroy');
-        Route::get('/profile/{part?}', 'show')->where('part', '[a-z]+')->name('profile.show');
+    Route::group(['prefix' => 'profile', 'middleware' => 'auth', 'controller' => ProfileController::class], function () {
+        Route::get('edit', 'edit')->name('profile.edit');
+        Route::get('{part?}', 'show')->where('part', '[a-z]+')->name('profile.show');
+        Route::delete('', 'destroy')->middleware('password.confirm')->name('profile.destroy');
     });
 
-    Route::controller(UserController::class)->group(function () {
-        Route::get('/users', 'index')->name('users.index');
-        Route::get('/users/{user}/{part?}', 'show')->where('part', '[a-z]+')->name('users.show');
+    Route::group(['prefix' => 'users', 'controller' => UserController::class], function () {
+        Route::get('', 'index')->name('users.index');
+        Route::get('{user}/{part?}', 'show')->where('part', '[a-z]+')->name('users.show');
     });
 });
