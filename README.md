@@ -71,3 +71,8 @@ php artisan key:generate --env=testing
 ```sh
 php artisan test 
 ```
+
+## Скриншоты
+![Список тем](https://github.com/AllaAverina/forum/blob/main/Screenshot1.png)
+![Тема](https://github.com/AllaAverina/forum/blob/main/Screenshot2.png)
+![Пост](https://github.com/AllaAverina/forum/blob/main/Screenshot3.png)
