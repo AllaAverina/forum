@@ -26,9 +26,9 @@ class CommentTest extends TestCase
         $post = Post::get()->random();
 
         $response = $this->actingAs($user)
-            ->from(route('posts.show', $post->id))
+            ->from(route('posts.show', $post->slug))
             ->followingRedirects()
-            ->post(route('posts.comments.store', $post->id), [
+            ->post(route('posts.comments.store', $post->slug), [
                 'body' => 'test comment',
             ]);
 

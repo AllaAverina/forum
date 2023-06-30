@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SearchRequest extends FormRequest
+class SearchUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,6 +23,16 @@ class SearchRequest extends FormRequest
     {
         return [
             'search' => ['max:255', 'string', 'nullable'],
+            'sort' => [
+                'string',
+                'nullable',
+                'in:name,posts_count,comments_count,topics_count'
+            ],
+            'order' => [
+                'string',
+                'nullable',
+                'in:asc,desc'
+            ],
         ];
     }
 }

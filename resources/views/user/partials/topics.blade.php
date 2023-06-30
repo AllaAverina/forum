@@ -11,12 +11,13 @@
         @forelse ($topics as $topic)
         <div class="card my-2 card-hover">
             <div class="row align-items-center">
-                @can ('delete', $topic)
+                @canany(['update', 'forceDelete'], $topic)
                 <div class="card-header bg-transparent">
                     <div class="row justify-content-end">
+                        @can('update', $topic)
                         @if ($topic->trashed())
                         <div class="col-auto">
-                            <form method="POST" action="{{ route('topics.restore', $topic->id) }}">
+                            <form method="POST" action="{{ route('topics.restore', $topic->slug) }}">
                                 @csrf
                                 @method('PATCH')
 
@@ -25,11 +26,11 @@
                         </div>
                         @else
                         <div class="col-auto">
-                            <a class="btn btn-warning btn-sm" href="{{ route('topics.edit', $topic->id) }}">{{ __('Edit') }}</a>
+                            <a class="btn btn-warning btn-sm" href="{{ route('topics.edit', $topic->slug) }}">{{ __('Edit') }}</a>
                         </div>
 
                         <div class="col-auto">
-                            <form method="POST" action="{{ route('topics.destroy', $topic->id) }}">
+                            <form method="POST" action="{{ route('topics.destroy', $topic->slug) }}">
                                 @csrf
                                 @method('DELETE')
 
@@ -37,15 +38,27 @@
                             </form>
                         </div>
                         @endif
+                        @endcan
+
+                        @can('forceDelete', $topic)
+                        <div class="col-auto">
+                            <form method="POST" action="{{ route('topics.forceDestroy', $topic->slug) }}">
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit" class="btn btn-danger btn-sm">{{ __('Delete completely') }}</button>
+                            </form>
+                        </div>
+                        @endcan
                     </div>
                 </div>
-                @endcan
+                @endcanany
 
                 <div class="card-body @if ($topic->trashed()) opacity-50 @endif">
                     <div class="row align-items-center">
                         <div class="col-md-10">
                             <h5 class="card-title">
-                                <a class="link-dark link-hover" href="{{ route('topics.show', $topic->id) }}">{{ $topic->title }}</a>
+                                <a class="link-dark link-hover" href="{{ route('topics.show', $topic->slug) }}">{{ $topic->title }}</a>
                             </h5>
 
                             @if ($topic->subtitle)

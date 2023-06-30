@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Topic;
-use App\Http\Requests\PostRequest;
-use App\Http\Requests\SearchRequest;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreUpdatePostRequest;
+use App\Http\Requests\SearchPostRequest;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -22,20 +22,20 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(SearchRequest $request)
+    public function index(SearchPostRequest $request)
     {
-        $search = $request->get('search', '');
         $posts = Post::whereHas('topic', function ($query) {
             $query->where('deleted_at', null);
         })
             ->with('user', 'topic')
             ->withCount('comments')
-            ->where('title', 'LIKE', "%$search%")
-            ->latest('updated_at')
+            ->where('title', 'LIKE', '%' . $request->get('search', '') . '%')
+            ->orderBy($request->get('sort', 'updated_at'), $request->get('order', 'asc'))
             ->paginate(20)
-            ->withQueryString();
+            ->withQueryString()
+            ->fragment('posts');
 
-        return view('post.index', compact('posts', 'search'));
+        return view('post.index', compact('posts'));
     }
 
     /**
@@ -50,12 +50,12 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PostRequest $request)
+    public function store(StoreUpdatePostRequest $request)
     {
-        $post = Post::create($request->merge(['user_id' => $request->user()->id])
-            ->only('topic_id', 'title', 'subtitle', 'body', 'user_id'));
+        $post = Post::create($request->merge(['slug' => Str::slug($request->title, '-'), 'user_id' => $request->user()->id])
+            ->only('topic_id', 'title', 'slug', 'subtitle', 'body', 'user_id'));
 
-        return to_route('posts.edit', $post->id)->withSuccess(__('Created successfully'));
+        return to_route('posts.edit', $post->slug)->withSuccess(__('Created successfully'));
     }
 
     /**
@@ -63,7 +63,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $comments = $post->comments()->with('user')->latest('updated_at')->paginate(20)->fragment('comments');
+        $comments = $post->comments()->with('user', 'user.roles')->latest('updated_at')->paginate(10)->fragment('comments');
         return view('post.post-comments', compact('post', 'comments'));
     }
 
@@ -79,11 +79,12 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(PostRequest $request, Post $post)
+    public function update(StoreUpdatePostRequest $request, Post $post)
     {
-        $post->update($request->only('topic_id', 'title', 'subtitle', 'body'));
+        $post->update($request->merge(['slug' => Str::slug($request->title, '-')])
+            ->only('topic_id', 'title', 'slug', 'subtitle', 'body'));
 
-        return back()->withSuccess(__('Updated successfully'));
+        return to_route('posts.edit', $post->slug)->withSuccess(__('Updated successfully'));
     }
 
     /**
@@ -99,10 +100,20 @@ class PostController extends Controller
     /**
      * Restore the specified resource to storage.
      */
-    public function restore(int $id)
+    public function restore(Post $post)
     {
-        Post::onlyTrashed()->findOrFail($id)->restore();
+        $post->restore();
 
         return back()->withSuccess(__('Restored successfully'));
+    }
+
+    /**
+     * Permanently remove the specified resource from storage.
+     */
+    public function forceDelete(Post $post)
+    {
+        $post->forceDelete();
+
+        return back()->withSuccess(__('Deleted successfully'));
     }
 }

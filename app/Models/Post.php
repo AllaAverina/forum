@@ -21,10 +21,19 @@ class Post extends Model
     protected $fillable = [
         'topic_id',
         'title',
+        'slug',
         'subtitle',
         'body',
         'user_id',
     ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 
     /**
      * All of the relationships to be touched.

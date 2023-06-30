@@ -16,9 +16,15 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
      * @param  array<string, string>  $input
      */
     public function update(User $user, array $input): void
-    {   
+    {
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
+            'nickname' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('users')->ignore($user->id),
+            ],
             'email' => [
                 'required',
                 'string',
@@ -28,12 +34,15 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             ],
         ])->validate();
 
-        if ($input['email'] !== $user->email &&
-            $user instanceof MustVerifyEmail) {
+        if (
+            $input['email'] !== $user->email &&
+            $user instanceof MustVerifyEmail
+        ) {
             $this->updateVerifiedUser($user, $input);
         } else {
             $user->forceFill([
                 'name' => $input['name'],
+                'nickname' => $input['nickname'],
                 'email' => $input['email'],
             ])->save();
         }

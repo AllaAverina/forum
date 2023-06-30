@@ -23,7 +23,6 @@ class CommentFactory extends Factory
             'created_at' => fake()->randomElement([now(), fake()->dateTimeBetween('-1 year', now())]),
             'user_id' => User::get()->random()->id,
             'post_id' => Post::get()->random()->id,
-
         ];
     }
 }

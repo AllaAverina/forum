@@ -23,7 +23,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get(route('profile.show'));
 
-        $response->assertViewIs('profile.show')
+        $response->assertViewIs('user.show')
             ->assertViewHas('user', $user)
             ->assertSuccessful();
     }
@@ -33,7 +33,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get(route('profile.show', 'posts'));
 
-        $response->assertViewIs('profile.show')
+        $response->assertViewIs('user.show')
             ->assertViewHas('user', $user)
             ->assertViewHas('posts')
             ->assertSuccessful();
@@ -44,7 +44,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get(route('profile.show', 'comments'));
 
-        $response->assertViewIs('profile.show')
+        $response->assertViewIs('user.show')
             ->assertViewHas('user', $user)
             ->assertViewHas('comments')
             ->assertSuccessful();
@@ -55,7 +55,7 @@ class ProfileTest extends TestCase
         $user = User::factory()->create();
         $response = $this->actingAs($user)->get(route('profile.show', 'topics'));
 
-        $response->assertViewIs('profile.show')
+        $response->assertViewIs('user.show')
             ->assertViewHas('user', $user)
             ->assertViewHas('topics')
             ->assertSuccessful();

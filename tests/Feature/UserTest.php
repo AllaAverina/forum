@@ -33,7 +33,7 @@ class UserTest extends TestCase
     public function test_show_user(): void
     {
         $user = User::get()->random();
-        $response = $this->get(route('users.show', $user->id));
+        $response = $this->get(route('users.show', $user->nickname));
         $response->assertViewIs('user.show')
             ->assertViewHas('user', $user)
             ->assertSuccessful();
@@ -42,7 +42,7 @@ class UserTest extends TestCase
     public function test_show_user_and_posts(): void
     {
         $user = User::get()->random();
-        $response = $this->get(route('users.show', [$user->id, 'posts']));
+        $response = $this->get(route('users.show', [$user->nickname, 'posts']));
         $response->assertViewIs('user.show')
             ->assertViewHas('user', $user)
             ->assertViewHas('posts')
@@ -52,7 +52,7 @@ class UserTest extends TestCase
     public function test_show_user_and_comments(): void
     {
         $user = User::get()->random();
-        $response = $this->get(route('users.show', [$user->id, 'comments']));
+        $response = $this->get(route('users.show', [$user->nickname, 'comments']));
         $response->assertViewIs('user.show')
             ->assertViewHas('user', $user)
             ->assertViewHas('comments')
@@ -62,7 +62,7 @@ class UserTest extends TestCase
     public function test_show_user_and_topics(): void
     {
         $user = User::get()->random();
-        $response = $this->get(route('users.show', [$user->id, 'topics']));
+        $response = $this->get(route('users.show', [$user->nickname, 'topics']));
         $response->assertViewIs('user.show')
             ->assertViewHas('user', $user)
             ->assertViewHas('topics')

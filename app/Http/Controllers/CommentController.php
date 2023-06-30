@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Post;
-use App\Http\Requests\CommentRequest;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreUpdateCommentRequest;
 
 class CommentController extends Controller
 {
@@ -21,7 +20,7 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CommentRequest $request, Post $post)
+    public function store(StoreUpdateCommentRequest $request, Post $post)
     {
         Comment::create([
             'body' => $request->body,
@@ -43,7 +42,7 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(CommentRequest $request, Comment $comment)
+    public function update(StoreUpdateCommentRequest $request, Comment $comment)
     {
         $comment->update($request->only('body'));
 
@@ -63,10 +62,20 @@ class CommentController extends Controller
     /**
      * Restore the specified resource to storage.
      */
-    public function restore(int $id)
+    public function restore(Comment $comment)
     {
-        Comment::onlyTrashed()->findOrFail($id)->restore();
+        $comment->restore();
 
         return back()->withSuccess(__('Restored successfully'));
+    }
+
+    /**
+     * Permanently remove the specified resource from storage.
+     */
+    public function forceDelete(Comment $comment)
+    {
+        $comment->forceDelete();
+
+        return back()->withSuccess(__('Deleted successfully'));
     }
 }

@@ -35,7 +35,7 @@ class PostTest extends TestCase
     public function test_show_post(): void
     {
         $post = Post::get()->random();
-        $response = $this->get(route('posts.show', $post->id));
+        $response = $this->get(route('posts.show', $post->slug));
         $response->assertViewIs('post.post-comments')
             ->assertViewHas('post', $post)
             ->assertViewHas('comments')
@@ -81,7 +81,7 @@ class PostTest extends TestCase
         $user = User::factory()->create();
         $post = Post::factory()->create(['user_id' => $user->id,]);
 
-        $response = $this->actingAs($user)->get(route('posts.edit', $post->id));
+        $response = $this->actingAs($user)->get(route('posts.edit', $post->slug));
         $response->assertViewIs('post.create-edit')
             ->assertViewHas('post', $post)
             ->assertSuccessful();
@@ -94,9 +94,9 @@ class PostTest extends TestCase
         $topic = Topic::get()->random();
 
         $response = $this->actingAs($user)
-            ->from(route('posts.edit', $post->id))
+            ->from(route('posts.edit', $post->slug))
             ->followingRedirects()
-            ->put(route('posts.update', $post->id), [
+            ->put(route('posts.update', $post->slug), [
                 'topic_id' => $topic->id,
                 'title' => 'new test title',
                 'subtitle' => $post->subtitle,
@@ -123,7 +123,7 @@ class PostTest extends TestCase
         $user = User::factory()->create();
         $post = Post::factory()->create(['user_id' => $user->id,]);
 
-        $response = $this->actingAs($user)->delete(route('posts.destroy', $post->id));
+        $response = $this->actingAs($user)->delete(route('posts.destroy', $post->slug));
 
         $this->assertSoftDeleted($post);
     }
@@ -134,7 +134,7 @@ class PostTest extends TestCase
         $post = Post::factory()->create(['user_id' => $user->id,]);
         $post->delete();
 
-        $response = $this->actingAs($user)->patch(route('posts.restore', $post->id));
+        $response = $this->actingAs($user)->patch(route('posts.restore', $post->slug));
 
         $this->assertDatabaseHas('posts', ['id' => $post->id, 'deleted_at' => null, 'user_id' => $user->id,]);
     }

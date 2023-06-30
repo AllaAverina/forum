@@ -61,6 +61,6 @@ class TopicPolicy
      */
     public function forceDelete(User $user, Topic $topic): bool
     {
-        return ($user->id === $topic->user_id);
+        return ($user->hasRole('moderator'));
     }
 }

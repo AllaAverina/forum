@@ -3,22 +3,22 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card mb-2">
                 <div class="card-header text-center bg-transparent">
                     <h2 class="card-title">{{ $post->title }}</h2>
-                    
+
                     @if ($post->subtitle)
                     <h4 class="card-subtitle mb-3">{{ $post->subtitle }}</h4>
                     @endif
 
                     <div class="card-subtitle text-center">
-                        <small class="border border-secondary rounded-5 px-2">{{ __('Topic') }}: <a class="link-dark link-hover" href="{{ route('topics.show', $post->topic_id) }}">{{ $post->topic->title }}</a></small>
-                        <small class="border border-secondary rounded-5 px-2">{{ __('Author') }}: <a class="link-dark link-hover" href="{{ route('users.show', $post->user_id) }}">{{ $post->user->name }}</a></small>
-                        <small class="border border-secondary rounded-5 px-2">{{ __('Created at') }}: {{ $post->created_at->format('d.m.Y') }}</small>
-                        
+                        <small class="border border-secondary-subtle rounded-2 px-2">{{ __('Topic') }}: <a class="link-dark link-hover" href="{{ route('topics.show', $post->topic->slug) }}">{{ $post->topic->title }}</a></small>
+                        <small class="border border-secondary-subtle rounded-2 px-2">{{ __('Author') }}: <a class="link-dark link-hover" href="{{ route('users.show', $post->user->nickname) }}">{{ $post->user->name }}</a></small>
+                        <small class="border border-secondary-subtle rounded-2 px-2">{{ __('Created at') }}: {{ $post->created_at->format('d.m.Y') }}</small>
+
                         @if ($post->created_at->format('d.m.Y H:i') !== $post->updated_at->format('d.m.Y H:i'))
-                        <small class="border border-secondary rounded-5 px-2">{{ __('Updated at') }}: {{ $post->updated_at->format('d.m.Y') }}</small>
+                        <small class="border border-secondary-subtle rounded-2 px-2">{{ __('Updated at') }}: {{ $post->updated_at->format('d.m.Y') }}</small>
                         @endif
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                     <h4 class="card-title">{{ __('Add a comment') }}</h4>
 
                     <div class="card-text">
-                        <form action="{{ route('posts.comments.store', $post->id) }}" method="POST">
+                        <form action="{{ route('posts.comments.store', $post->slug) }}" method="POST">
                             @csrf
                             <div class="form-group mb-2">
                                 @error('body')
@@ -59,12 +59,21 @@
                 <div id="comments" class="card-header bg-transparent">
                     <span>{{ __('Comments') }}: {{ count($comments) }}</span>
                 </div>
-                
+
                 <ul class="list-group list-group-flush">
                     @forelse ($comments as $comment)
                     <li class="list-group-item">
                         <small>
-                            <a class="link-dark link-hover" href="{{ route('users.show', $comment->user_id) }}">{{ $comment->user->name }}</a>
+                            <a class="link-dark link-hover" href="{{ route('users.show', $comment->user->nickname) }}">{{ $comment->user->name }}</a>
+
+                            @if ($comment->user->hasRole('moderator'))
+                            <span class="badge bg-warning text-dark">{{ __('Moderator') }}</span>
+                            @endif
+
+                            @if ($comment->user->hasRole('administrator'))
+                            <span class="badge bg-warning text-dark">{{ __('Administrator') }}</span>
+                            @endif
+
                             <span class="mx-1">·</span>
                             <span>{{ $comment->created_at->format('d.m.Y H:i') }}</span>
 
@@ -73,7 +82,7 @@
                             <span>{{ __('Updated at') }} {{ $comment->updated_at->format('d.m.Y H:i') }}</span>
                             @endif
                         </small>
-                        
+
                         <p class="mt-2">{{ $comment->body }}</p>
                     </li>
                     @empty

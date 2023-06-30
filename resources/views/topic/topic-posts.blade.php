@@ -13,11 +13,11 @@
                     @endif
 
                     <div class="card-subtitle text-center">
-                        <small class="border border-secondary rounded-5 px-2">{{ __('Author') }}: <a class="link-dark link-hover" href="{{ route('users.show', $topic->user_id) }}">{{ $topic->user->name }}</a></small>
-                        <small class="border border-secondary rounded-5 px-2">{{ __('Created at') }}: {{ $topic->created_at->format('d.m.Y') }}</small>
+                        <small class="border border-secondary-subtle rounded-2 px-2">{{ __('Author') }}: <a class="link-dark link-hover" href="{{ route('users.show', $topic->user->nickname) }}">{{ $topic->user->name }}</a></small>
+                        <small class="border border-secondary-subtle rounded-2 px-2">{{ __('Created at') }}: {{ $topic->created_at->format('d.m.Y') }}</small>
                         
                         @if ($topic->created_at->format('d.m.Y H:i') !== $topic->updated_at->format('d.m.Y H:i'))
-                        <small class="border border-secondary rounded-5 px-2">{{ __('Updated at') }}: {{ $topic->updated_at->format('d.m.Y') }}</small>
+                        <small class="border border-secondary-subtle rounded-2 px-2">{{ __('Updated at') }}: {{ $topic->updated_at->format('d.m.Y') }}</small>
                         @endif
                     </div>
                 </div>
@@ -27,7 +27,7 @@
                     <li class="list-group-item">
                         <div class="row align-items-center">
                             <div class="col-md-8">
-                                <a class="card-title link-dark link-hover fs-4" href="{{ route('posts.show', $post->id) }}">{{ $post->title }}</a>
+                                <a class="card-title link-dark link-hover fs-4" href="{{ route('posts.show', $post->slug) }}">{{ $post->title }}</a>
 
                                 @if ($post->subtitle)
                                 <p class="card-subtitle">{{ $post->subtitle }}</p>

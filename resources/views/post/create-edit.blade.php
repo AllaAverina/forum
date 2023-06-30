@@ -17,7 +17,7 @@
                     @endif
 
                     @if (isset($post))
-                    <form method="POST" action="{{ route('posts.update', $post->id) }}">
+                    <form method="POST" action="{{ route('posts.update', $post->slug) }}">
                         @method('PUT')
                     @else
                     <form method="POST" action="{{ route('posts.store') }}">
@@ -31,11 +31,7 @@
                                 <select class="form-select @error('topic_id') is-invalid @enderror" name="topic_id" id="topic" required autofocus>
                                     <option value="" hidden>{{ __('Choose a topic') }}</option>
                                     @foreach ($topics as $topic)
-                                        @if (isset($post) && $topic->id === $post->topic_id)
-                                        <option selected value="{{ $topic->id }}">{{ $topic->title }}</option>
-                                        @else
-                                        <option value="{{ $topic->id }}">{{ $topic->title }}</option>
-                                        @endif
+                                        <option value="{{ $topic->id }}" @selected(old('topic_id', $post->topic_id ?? '') == $topic->id)>{{ $topic->title }}</option>
                                     @endforeach
                                 </select>
 

@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class TopicRequest extends FormRequest
+class SearchTopicRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,13 +22,17 @@ class TopicRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => [
-                'required',
+            'search' => ['max:255', 'string', 'nullable'],
+            'sort' => [
                 'string',
-                'max:255',
-                Rule::unique('topics')->ignore(optional($this->topic)->id),
+                'nullable',
+                'in:title,created_at,updated_at,posts_count'
             ],
-            'subtitle' => ['max:255', 'string', 'nullable'],
+            'order' => [
+                'string',
+                'nullable',
+                'in:asc,desc'
+            ],
         ];
     }
 }

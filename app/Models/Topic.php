@@ -20,9 +20,18 @@ class Topic extends Model
      */
     protected $fillable = [
         'title',
+        'slug',
         'subtitle',
         'user_id',
     ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 
     /**
      * Get the posts for the topic.

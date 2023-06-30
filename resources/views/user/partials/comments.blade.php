@@ -11,9 +11,10 @@
         @forelse ($comments as $comment)
         <div class="card my-2 card-hover">
             <div class="row align-items-center">
-                @can ('delete', $comment)
+                @canany(['update', 'forceDelete'], $comment)
                 <div class="card-header bg-transparent">
                     <div class="row justify-content-end">
+                        @can('update', $comment)
                         @if ($comment->trashed())
                         <div class="col-auto">
                             <form method="POST" action="{{ route('comments.restore', $comment->id) }}">
@@ -37,9 +38,21 @@
                             </form>
                         </div>
                         @endif
+                        @endcan
+
+                        @can('forceDelete', $comment)
+                        <div class="col-auto">
+                            <form method="POST" action="{{ route('comments.forceDestroy', $comment->id) }}">
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit" class="btn btn-danger btn-sm">{{ __('Delete completely') }}</button>
+                            </form>
+                        </div>
+                        @endcan
                     </div>
                 </div>
-                @endcan
+                @endcanany
 
                 <div class="card-body  @if ($comment->trashed()) opacity-50 @endif">
                     <div class="row align-items-center">
@@ -50,7 +63,7 @@
                         <div class="col-md-2 py-1">
                             <span>{{ __('Post') }}:
                                 @if ($comment->post)
-                                <a class="link-dark link-hover" href="{{ route('posts.show', $comment->post_id) }}">{{ $comment->post->title }}</a>
+                                <a class="link-dark link-hover" href="{{ route('posts.show', $comment->post->slug) }}">{{ $comment->post->title }}</a>
                                 @else
                                 <span class="text-danger">{{ __('DELETED') }}</span>
                                 @endif

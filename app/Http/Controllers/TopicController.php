@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Topic;
-use App\Http\Requests\TopicRequest;
-use App\Http\Requests\SearchRequest;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreUpdateTopicRequest;
+use App\Http\Requests\SearchTopicRequest;
+use Illuminate\Support\Str;
 
 class TopicController extends Controller
 {
@@ -21,16 +21,16 @@ class TopicController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(SearchRequest $request)
+    public function index(SearchTopicRequest $request)
     {
-        $search = $request->get('search', '');
         $topics = Topic::withCount('posts')
-            ->where('title', 'LIKE', "%$search%")
-            ->latest('updated_at')
-            ->paginate(10)
-            ->withQueryString();
+            ->where('title', 'LIKE', '%' . $request->get('search', '') . '%')
+            ->orderBy($request->get('sort', 'updated_at'), $request->get('order', 'asc'))
+            ->paginate(20)
+            ->withQueryString()
+            ->fragment('topics');
 
-        return view('topic.index', compact('topics', 'search'));
+        return view('topic.index', compact('topics'));
     }
 
     /**
@@ -44,12 +44,12 @@ class TopicController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(TopicRequest $request)
+    public function store(StoreUpdateTopicRequest $request)
     {
-        $topic = Topic::create($request->merge(['user_id' => $request->user()->id])
-            ->only('title', 'subtitle', 'user_id'));
+        $topic = Topic::create($request->merge(['slug' => Str::slug($request->title, '-'), 'user_id' => $request->user()->id,])
+            ->only('title', 'slug', 'subtitle', 'user_id'));
 
-        return to_route('topics.edit', $topic)->withSuccess(__('Created successfully'));
+        return to_route('topics.edit', $topic->slug)->withSuccess(__('Created successfully'));
     }
 
     /**
@@ -72,11 +72,11 @@ class TopicController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(TopicRequest $request, Topic $topic)
+    public function update(StoreUpdateTopicRequest $request, Topic $topic)
     {
-        $topic->update($request->only('title', 'subtitle'));
+        $topic->update($request->merge(['slug' => Str::slug($request->title, '-')])->only('title', 'slug', 'subtitle'));
 
-        return back()->withSuccess(__('Updated successfully'));
+        return to_route('topics.edit', $topic->slug)->withSuccess(__('Updated successfully'));
     }
 
     /**
@@ -92,10 +92,20 @@ class TopicController extends Controller
     /**
      * Restore the specified resource to storage.
      */
-    public function restore(int $id)
+    public function restore(Topic $topic)
     {
-        Topic::onlyTrashed()->findOrFail($id)->restore();
+        $topic->restore();
 
         return back()->withSuccess(__('Restored successfully'));
+    }
+
+    /**
+     * Permanently remove the specified resource from storage.
+     */
+    public function forceDelete(Topic $topic)
+    {
+        $topic->forceDelete();
+
+        return back()->withSuccess(__('Deleted successfully'));
     }
 }

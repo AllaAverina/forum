@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,8 +18,10 @@ class TopicFactory extends Factory
      */
     public function definition(): array
     {
+        $title = fake()->unique()->words(rand(1, 5), true);
         return [
-            'title' => ucfirst(fake()->unique()->words(rand(1, 5), true)),
+            'title' => ucfirst($title),
+            'slug' => Str::slug($title, '-'),
             'subtitle' => fake()->randomElement([null, ucfirst(fake()->words(rand(5, 15), true))]),
             'created_at' => fake()->randomElement([now(), fake()->dateTimeBetween('-1 year', now())]),
             'user_id' => User::get()->random()->id,

@@ -34,7 +34,7 @@ class TopicTest extends TestCase
     public function test_show_topic(): void
     {
         $topic = Topic::get()->random();
-        $response = $this->get(route('topics.show', $topic->id));
+        $response = $this->get(route('topics.show', $topic->slug));
         $response->assertViewIs('topic.topic-posts')
             ->assertViewHas('topic', $topic)
             ->assertViewHas('posts')
@@ -75,7 +75,7 @@ class TopicTest extends TestCase
         $user = User::factory()->create();
         $topic = Topic::factory()->create(['user_id' => $user->id,]);
 
-        $response = $this->actingAs($user)->get(route('topics.edit', $topic->id));
+        $response = $this->actingAs($user)->get(route('topics.edit', $topic->slug));
         $response->assertViewIs('topic.create-edit')
             ->assertViewHas('topic', $topic)
             ->assertSuccessful();
@@ -87,9 +87,9 @@ class TopicTest extends TestCase
         $topic = Topic::factory()->create(['user_id' => $user->id,]);
 
         $response = $this->actingAs($user)
-            ->from(route('topics.edit', $topic->id))
+            ->from(route('topics.edit', $topic->slug))
             ->followingRedirects()
-            ->put(route('topics.update', $topic->id), [
+            ->put(route('topics.update', $topic->slug), [
                 'title' => 'new test title',
                 'subtitle' => $topic->subtitle,
             ]);
@@ -113,7 +113,7 @@ class TopicTest extends TestCase
         $user = User::factory()->create();
         $topic = Topic::factory()->create(['user_id' => $user->id,]);
 
-        $response = $this->actingAs($user)->delete(route('topics.destroy', $topic->id));
+        $response = $this->actingAs($user)->delete(route('topics.destroy', $topic->slug));
 
         $this->assertSoftDeleted($topic);
     }
@@ -124,7 +124,7 @@ class TopicTest extends TestCase
         $topic = Topic::factory()->create(['user_id' => $user->id,]);
         $topic->delete();
 
-        $response = $this->actingAs($user)->patch(route('topics.restore', $topic->id));
+        $response = $this->actingAs($user)->patch(route('topics.restore', $topic->slug));
 
         $this->assertDatabaseHas('topics', ['id' => $topic->id, 'deleted_at' => null, 'user_id' => $user->id,]);
     }

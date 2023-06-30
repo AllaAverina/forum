@@ -5,13 +5,11 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
-    //use HasApiTokens, HasFactory, Notifiable;
     use HasFactory;
 
     /**
@@ -21,6 +19,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'nickname',
         'email',
         'password',
     ];
@@ -45,6 +44,14 @@ class User extends Authenticatable
     ];
 
     /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'nickname';
+    }
+
+    /**
      * Get user comments.
      */
     public function comments(): HasMany
@@ -66,5 +73,21 @@ class User extends Authenticatable
     public function topics(): HasMany
     {
         return $this->hasMany(Topic::class);
+    }
+
+    /**
+     * The roles that belong to the user.
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'role_user');
+    }
+
+    /**
+     * Checking whether the user has a role.
+     */
+    public function hasRole(string $role): bool
+    {
+        return ($this->roles->contains('role', $role));
     }
 }

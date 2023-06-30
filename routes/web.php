@@ -18,22 +18,33 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('setlocale/{locale}/', function ($locale) {
+Route::get('setlocale/{locale}', function ($locale) {
     session(['locale' => $locale]);
     return back();
 })->name('setlocale');
 
 Route::group(['middleware' => 'setlocale'], function () {
-    Route::get('', [TopicController::class, 'index'])->name('index');
+    Route::get('', function () {
+        return to_route('topics.index');
+    });
 
     Route::resource('topics', TopicController::class);
-    Route::patch('topics/{id}/restore', [TopicController::class, 'restore'])->name('topics.restore');
+    Route::group(['prefix' => 'topics', 'controller' => TopicController::class], function () {
+        Route::patch('{topic}/restore', 'restore')->withTrashed()->name('topics.restore');
+        Route::delete('{topic}/forceDestroy', 'forceDelete')->name('topics.forceDestroy');
+    });
 
     Route::resource('posts', PostController::class);
-    Route::patch('posts/{id}/restore', [PostController::class, 'restore'])->name('posts.restore');
+    Route::group(['prefix' => 'posts', 'controller' => PostController::class], function () {
+        Route::patch('{post}/restore', 'restore')->withTrashed()->name('posts.restore');
+        Route::delete('{post}/forceDestroy', 'forceDelete')->name('posts.forceDestroy');
+    });
 
     Route::resource('posts.comments', CommentController::class)->shallow()->only('store', 'edit', 'update', 'destroy');
-    Route::patch('comments/{id}/restore', [CommentController::class, 'restore'])->name('comments.restore');
+    Route::group(['prefix' => 'comments', 'controller' => CommentController::class], function () {
+        Route::patch('{comment}/restore', 'restore')->withTrashed()->name('comments.restore');
+        Route::delete('{comment}/forceDestroy', 'forceDelete')->name('comments.forceDestroy');
+    });
 
     Route::group(['prefix' => 'profile', 'middleware' => 'auth', 'controller' => ProfileController::class], function () {
         Route::get('edit', 'edit')->name('profile.edit');
@@ -44,5 +55,7 @@ Route::group(['middleware' => 'setlocale'], function () {
     Route::group(['prefix' => 'users', 'controller' => UserController::class], function () {
         Route::get('', 'index')->name('users.index');
         Route::get('{user}/{part?}', 'show')->where('part', '[a-z]+')->name('users.show');
+        Route::patch('{user}/assignModerator', 'assignModerator')->name('moderators.assign');
+        Route::patch('{user}/removeModerator', 'removeModerator')->name('moderators.remove');
     });
 });

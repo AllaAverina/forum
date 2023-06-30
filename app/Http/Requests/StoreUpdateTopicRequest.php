@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class CommentRequest extends FormRequest
+class StoreUpdateTopicRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +23,13 @@ class CommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'body' => ['required', 'string',],
+            'title' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('topics')->ignore(optional($this->topic)->id),
+            ],
+            'subtitle' => ['max:255', 'string', 'nullable'],
         ];
     }
 }

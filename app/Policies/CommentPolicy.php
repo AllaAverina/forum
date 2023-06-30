@@ -45,6 +45,6 @@ class CommentPolicy
      */
     public function forceDelete(User $user, Comment $comment): bool
     {
-        return ($user->id === $comment->user_id);
+        return ($user->hasRole('moderator'));
     }
 }

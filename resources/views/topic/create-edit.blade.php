@@ -17,7 +17,7 @@
                     @endif
 
                     @if (isset($topic))
-                    <form method="POST" action="{{ route('topics.update', $topic->id) }}">
+                    <form method="POST" action="{{ route('topics.update', $topic->slug) }}">
                         @method('PUT')
                     @else
                     <form method="POST" action="{{ route('topics.store') }}">
